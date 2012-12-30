@@ -6,9 +6,11 @@ from decimal import Decimal
 class ChecksumError(ValueError):
     pass
 
-def parse(post):
-    if not checksum(post):
+def parse(post, validate_md5=True):
+    if validate_md5 and not checksum(post):
         raise ChecksumError('Invalid md5')
+    elif not validate_md5:
+        print "Warning: not checking MD5 of 2co order"
     if post['message_type'] == 'ORDER_CREATED':
         return OrderCreatedMsg(post)
 

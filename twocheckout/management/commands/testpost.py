@@ -13,4 +13,4 @@ class Command(BaseCommand):
 
         post = {key: request['POST'][key][0] for key in request['POST']}
 
-        parse(post)
+        parse(post, False)

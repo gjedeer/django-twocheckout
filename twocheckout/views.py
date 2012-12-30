@@ -14,7 +14,8 @@ def ins(request):
     try:
         parsed = parser.parse(request.POST)
         pickle.dump(parsed, open('/tmp/parsed_%s.pickle' % datetime.datetime.now().strftime('%Y-%m-%d-%I-%M-%S'), 'w'))
-        signals.order_created.send(parsed)
+        signals.order_created.send(sender=ins, order=parsed)
     except parser.ChecksumError, e:
         syslog.syslog(str(e))
+        print e
     return HttpResponse('hello')
