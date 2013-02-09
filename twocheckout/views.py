@@ -13,6 +13,8 @@ def ins(request):
     pickle.dump(obj, open('/tmp/%s.pickle' % datetime.datetime.now().strftime('%Y-%m-%d-%I-%M-%S'), 'w'))
     try:
         parsed = parser.parse(request.POST)
+        if not parsed:
+            return HttpResponse('yeah')
         pickle.dump(parsed, open('/tmp/parsed_%s.pickle' % datetime.datetime.now().strftime('%Y-%m-%d-%I-%M-%S'), 'w'))
         signals.order_created.send(sender=ins, order=parsed)
     except parser.ChecksumError, e:
