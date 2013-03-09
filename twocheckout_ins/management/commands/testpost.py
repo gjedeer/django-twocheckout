@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 import pickle
-from twocheckout.parser import parse
-from twocheckout import signals
+from twocheckout_ins.parser import parse
 
 class Command(BaseCommand):
     args = '<filename>'
@@ -9,7 +8,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file = open(args[0])
-        object = pickle.load(file)
+        request = pickle.load(file)
         file.close()
 
-        signals.order_created.send(sender=None, order=object)
+        post = {key: request['POST'][key][0] for key in request['POST']}
+
+        parse(post, False)

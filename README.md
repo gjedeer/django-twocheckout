@@ -5,7 +5,7 @@ Half-baked 2checkout.com INS support for Django
 
 1. Add urls.py code 
 <pre>
-  (r'^2checkout/', include('twocheckout.urls')),
+  (r'^2checkout/', include('twocheckout_ins.urls')),
 </pre>
 
 2. Add /2checkout/ins to notifications tab in 2co
@@ -13,7 +13,7 @@ Half-baked 2checkout.com INS support for Django
 
 4. Connect to a signal in your app:
 <pre>
-  from twocheckout import signals
+  from twocheckout_ins import signals
   @receiver(signals.order_created)
   def order_created(sender, **kwargs):
     ...
