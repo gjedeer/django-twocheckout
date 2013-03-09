@@ -36,7 +36,7 @@ class TwoCheckoutMsg:
         self.parse_callback_fields(post, fields, int)
 
     def parse_string_fields(self, post, fields):
-        self.parse_callback_fields(post, fields, str)
+        self.parse_callback_fields(post, fields, unicode)
 
     def parse_date_fields(self, post, fields):
         self.parse_callback_fields(post, fields, 
