@@ -2,6 +2,7 @@ import hashlib
 from django.conf import settings
 import datetime
 from decimal import Decimal
+import signals
 
 class ChecksumError(ValueError):
     pass
@@ -11,8 +12,11 @@ def parse(post, validate_md5=True):
         raise ChecksumError('Invalid md5')
     elif not validate_md5:
         print "Warning: not checking MD5 of 2co order"
+
     if post['message_type'] == 'ORDER_CREATED':
         return OrderCreatedMsg(post)
+    elif post['message_type'] == 'FRAUD_STATUS_CHANGED':
+        return FraudResultMsg(post)
 
 
 def checksum(post):
@@ -132,3 +136,15 @@ class OrderCreatedMsg(TwoCheckoutMsg):
         self.items = []
         for i in xrange(1,self.item_count+1):
             self.items.append(OrderItem(post, i))
+
+    def send_signal(self):
+        signals.order_created.send(sender=self, order=self)
+
+class FraudResultMsg(OrderCreatedMsg):
+    def send_signal(self):
+        # fraud_status is: 'pass', 'fail' or 'wait'
+        if self.fraud_status == 'pass':
+            signals.fraud_status_pass.send(sender=self, order=self)
+        elif self.fraud_status == 'fail':
+            signals.fraud_status_fail.send(sender=self, order=self)
+

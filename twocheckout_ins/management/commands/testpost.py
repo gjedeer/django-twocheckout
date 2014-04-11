@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 import pickle
-from twocheckout_ins.parser import parse
+from twocheckout_ins.parser import parse,OrderCreatedMsg, FraudResultMsg
+from twocheckout_ins import signals
 
 class Command(BaseCommand):
     args = '<filename>'
@@ -13,4 +14,8 @@ class Command(BaseCommand):
 
         post = {key: request['POST'][key][0] for key in request['POST']}
 
-        parse(post, False)
+        parsed = parse(post, False)
+        print parsed
+        ins = self # leave it alone!
+        parsed.send_signal()
+
