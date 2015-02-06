@@ -44,6 +44,9 @@ class TwoCheckoutMsg:
 
     def parse_date_fields(self, post, fields):
         self.parse_callback_fields(post, fields, 
+                                   lambda d: datetime.datetime.strptime(d, '%Y-%m-%d'))
+    def parse_datetime_fields(self, post, fields):
+        self.parse_callback_fields(post, fields, 
                                    lambda d: datetime.datetime.strptime(d, '%Y-%m-%d %H:%M:%S'))
 
     def parse_decimal_fields(self, post, fields):
@@ -52,7 +55,11 @@ class TwoCheckoutMsg:
 class OrderItem(TwoCheckoutMsg):
     def parse_callback_fields(self, post, fields, callback):
         for field in fields:
-            setattr(self, field, callback(post['item_' + field + '_' + str(self.n)]))
+            try:
+                setattr(self, field, callback(post['item_' + field + '_' + str(self.n)]))
+            except:
+                print "WHEN PARSING %s" % field
+                raise
 
     def __init__(self, post, n):
         self.n = n
@@ -74,13 +81,13 @@ class OrderItem(TwoCheckoutMsg):
                 'rec_list_amount',
                 'rec_install_billed'
             ])
-            self.parse_date_fields(post, [
-                'rec_date_next',
-            ])
+#            self.parse_date_fields(post, [
+#                'rec_date_next',
+#            ])
 
 class OrderCreatedMsg(TwoCheckoutMsg):
     def __init__(self, post):
-        self.parse_date_fields(post, [
+        self.parse_datetime_fields(post, [
             'timestamp',
             'sale_date_placed',
 #            'auth_exp',
